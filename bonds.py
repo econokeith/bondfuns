@@ -157,7 +157,7 @@ class Treasury(Bond):
                  cusip=None,**kwargs):
         super(Treasury, self).__init__(name=name, maturity_date=maturity_date, coupon=coupon, issue_date=issue_date,
                                        tenor=tenor, cf=cf, **kwargs)
-        self.reopened = reopen
+        self.reopened = reopened
         self.cusip = cusip
 
     @classmethod
