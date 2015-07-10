@@ -4,6 +4,9 @@
 
 `bondfun` will accept dates in datetime, 2012/3/15, 2013-3-15, or 2015_3_15 formats
 
+#### Dependencies
+-dateutils
+
 ## Methods and Attributes
 ### Attribues
 ```
