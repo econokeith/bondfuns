@@ -7,6 +7,9 @@
 #### Dependencies
 - dateutils
 
+#### Warning
+- this is the alpha version 0.0 of this package and has only been tested on python 2.7
+
 ## Methods and Attributes
 ### Attribues
 ```
