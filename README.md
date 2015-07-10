@@ -33,6 +33,7 @@ notes:
 - `dv01(self, settle_date, price_or_yield, tplus=0)`: dollar value of a basis point
 - `acc_int(self, settle_date, tplus=0)`:accrued interest
 - `cash_flows(self, settle_date=None, tplus=0, all=True)`: cash flow dates
+
 (note: all basic calculations assume the date entered is the settle date. if entering trade date, change tplus to 1)
 
 #### Calendar Methods
