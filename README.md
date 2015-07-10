@@ -1,73 +1,57 @@
 # bondfuns : basic price / yield / calendar functions for evaluating US Treasuries
 
+`bondfun` is a creates a basic Treasury bond object called 'Treasury()' which follows the UST conventions (i.e. Actual/Actual, semi-annual coupons, etc). It provides then provides basic methods for solving for price, yield to maturity, accrued interest, etc as well as calendar function. 
 
-Basic US Treasury Object:
+## Basic Usage
+```
+In[2]: from bondfuns import Treasury
+In[3]: t1 = Treasury('2020/5/31', .0125)
+In[4]: t1.price('2015/7/8', .0125)
+```
+Out[4]: 99.9997
+```
+In[5]: t1 = Treasury('2018/5/31', .0075)
+In[6]: t1.price('2015/7/8', .00075)
+```
+Out[6]: 101.9524
+```
+In[7]: t1.price('2015/7/8', .0075)
+```
+Out[7]: 99.9999
+```
+In[8]: t1.ytm('2015/7/8', 100)
+```
+Out[8]: 0.0075
+```
+In[9]: t2 = Treasury.from_name('T_1.25_2019_6_30')
+In[10]: t2.maturity_date
+```
+Out[10]: datetime.datetime(2019, 6, 30, 0, 0)
+```
+In[13]: t2.ytm('2012_1_3', 101)
+```
+Out[13]: 0.011105
+```
+In[15]: t2.acc_int('2013-12-31')
+```
+Out[15]: 0.0
+```
+In[16]: t2.duration('2013-12-31', 100)
+```
+Out[16]: 5.30
+```
+In[17]: t2.duration('2013-12-31', .0125)
+```
+Out[17]: 5.30
+```
+In[18]: Treasury.is_holiday("2012-1-1")
+```
+Out[18]: False
+```
+In[21]: t2.next_b_day("2012-1-1")
+```
+Out[21]: datetime.datetime(2012, 1, 3, 0, 0)
 
-Treasury()
 
-Will accept dates in datetime , YYYY/mm/dd, YYYY-mm-dd, or YYYY_mm_dd formatting
 
-class attributes:
 
-acc_con = accrual convention = Actual/Actual
-holiday_cal = UST_CALENDAR
-t_plus = 1 = settle convention t+1
-
-attributes are:
-maturity_date, coupon, issue_date, tenor, cf (cash flows), name, reopened, cusip
-
-(note: setting either issue_date or tenor will set the other)
-
-Class Methods:
-
-from_name(cls, name): Treasury.from_name('T_.25_2013_1_15')
-next_b_day(cls, today, steps=1): next_business_day using class holiday calendar
-settle(cls, trade_day): using calendar and settle convention to find settle day of trade on given date
-
-Instance Methods:
-
-ytm(self, settle_date, price, tplus=0): yield to maturity
-price(self, settle_date, ytm, tplus=0): clean price
-duration(self, settle_date, price_or_yield, tplus=0): modified duration
-dv01(self, settle_date, price_or_yield, tplus=0): dollar value of a basis point
-acc_int(self, settle_date, tplus=0):accrued interest
-cash_flows(self, settle_date=None, tplus=0, all=True): cash flow dates
-
-Is a child class of the Bond Class
-
-Basic Calendar Object: 
-
-Calendar()
-
-Calendar class for making a financial calendar.
-
-__init__(self, holiday_path=None):
-
-initialized with a pickled holiday calendar. default is:
-'bondfuns/ust_holiday_cal.pickle'
-
-Instance Methods are:
-
-param: today -> can be in the string form YYYY-mm-dd (2012/1/1, 2012-1-1, or 2012/1/2) or as a datetime object
-
-is_holiday(self, today):
-is_b_day(self, today):
-next_b_day(self, today, step=1):
-
-In[2]: from bondfuns.calendar import Calendar
-
-In[3]: cal = Calendar()
-
-In[4]: cal.is_holiday("2012/1/1")
-Out[4]: False
-
-In[5]: cal.is_b_day("2012/1/1")
-Out[5]: False
-
-In[10]: cal.is_holiday("2012/1/2")
-Out[10]: True
-
-In[6]: cal.next_b_day("2012/1/1")
-Out[6]: datetime.datetime(2012, 1, 3, 0, 0)
-
-"""
