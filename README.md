@@ -1,5 +1,5 @@
-# bondfuns
-Basic library of function for evaluating US Treasuries
+# bondfuns : basic price / yield / calendar functions for evaluating US Treasuries
+
 
 Basic US Treasury Object:
 
