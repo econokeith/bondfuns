@@ -21,7 +21,7 @@ setup(
     keywords="finance, bonds, yield to maturity, Treasuries",
     author="Keith Blackwell",
     author_email="keith.blackwell@gmail.com",
-    url="https://github.com/zachwill/fred",
+    url="https://github.com/econokeith/bondfuns",
     license="MIT",
     packages=[
         "bondfuns"
