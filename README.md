@@ -15,7 +15,7 @@ notes:
 - `cf` is the tuple of cash flow dates
 - either `issue_date` or `tenor` will set the other
 - if `issue_date` is not None and an earlier trade or settle date is entered that date will be assume to be the issue date of the bond
-- if a trade or settle_date that is after maturity_date, all calculations will return 0
+- if a trade or `settle_date` that is after or equal to `maturity_date`, all calculations will return 0
 - all date attributes are saved and returned in datetime form
 
 ### Methods
