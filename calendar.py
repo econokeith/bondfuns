@@ -3,17 +3,18 @@ __author__ = 'keithblackwell1'
 from datetime import timedelta
 import datetime
 import bisect as bs
-import pickle
+import csv
+import os
 
 
 class Calendar(object):
     """
     Calendar class for making a financial calendar.
 
-    __init__(self, holiday_path=None):
+    __init__(self, holiday_file=None):
 
-    initialized with a pickled holiday calendar. default is:
-    'bondfuns/ust_holiday_cal.pickle'
+    initialized with a holiday calendar csv. default is:
+    'data/ust_holidays.csv'
 
     Instance Methods are:
 
@@ -23,7 +24,7 @@ class Calendar(object):
     is_b_day(self, today):
     next_b_day(self, today, step=1):
 
-    In[2]: from bondfuns.calendar import Calendar
+    In[2]: from bondfuns import Calendar
 
     In[3]: cal = Calendar()
 
@@ -41,13 +42,12 @@ class Calendar(object):
 
     """
 
-    def __init__(self, holiday_path=None):
+    def __init__(self, holiday_file='ust_holidays.csv'):
 
-        if holiday_path is None:
-            holiday_path = 'bondfuns/ust_holiday_cal.pickle'
+        this_dir, this_filename = os.path.split(__file__)
+        holiday_path = os.path.join(this_dir, 'data', holiday_file)
 
-        with open(holiday_path) as cal:
-            self.holidays = pickle.load(cal)
+        self.holidays = open_string_csv_to_datetime(holiday_path)
 
     def is_holiday(self, today):
 
@@ -112,9 +112,10 @@ class Calendar(object):
         return today
 
 
-def dt_to_epoch(when):
+def to_epoch_milli(today):
+
     t0 = datetime.datetime(1969, 12, 31, 19, 0)
-    t1 = datetime.datetime(when.year, when.month, when.day)
+    t1 = to_datetime(today)
     dif = t1 - t0
 
     micro_second_date = int(dif.total_seconds() * 1000)
@@ -123,7 +124,7 @@ def dt_to_epoch(when):
 
 def xls_to_datetime(xldate):
     """
-    switches from excel number to time to datetime.
+    switches from excel number datetime
 
     """
     xl_one = datetime.datetime(1899, 12, 31)
@@ -143,3 +144,18 @@ def to_datetime(day):
 
     else:
         return None
+
+
+def open_string_csv_to_datetime(csv_path, opt='rU'):
+    f = open(csv_path, opt)
+    csv_f = csv.reader(f)
+    xxx = [x for x in csv_f]
+    xxx = [to_datetime(x) for x in xxx[0]]
+    f.close()
+    return xxx
+
+def write_string_csv(data, csv_path):
+    fp = open(csv_path, 'wb')
+    a = csv.writer(fp)
+    a.writerows([data])
+    fp.close()

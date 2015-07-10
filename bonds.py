@@ -2,12 +2,10 @@ __author__ = 'keithblackwell1'
 
 import bisect as bs
 import datetime
-import pickle
-
 import scipy.optimize as optimize
 from dateutil.relativedelta import relativedelta
-
-from bondfuns.calendar import Calendar, to_datetime
+import os
+from bondfuns.calendar import Calendar, to_datetime, open_string_csv_to_datetime
 
 UST_CALENDAR = Calendar()
 
@@ -59,6 +57,22 @@ class Bond(object):
         returns settle day for trade on given day using bonds settle convention
         """
         return cls.holiday_cal.next_b_day(trade_day, cls.t_plus)
+
+    @classmethod
+    def is_b_day(cls, trade_day):
+        """
+        settle(cls, trade_day):
+        returns settle day for trade on given day using bonds settle convention
+        """
+        return cls.holiday_cal.is_b_day(trade_day)
+
+    @classmethod
+    def is_holiday(cls, trade_day):
+        """
+        settle(cls, trade_day):
+        returns settle day for trade on given day using bonds settle convention
+        """
+        return cls.holiday_cal.is_holiday(trade_day)
 
     @property
     def maturity_date(self):
@@ -154,11 +168,15 @@ class Treasury(Bond):
     t_plus = 1 ## UST settle T+1
 
     def __init__(self, maturity_date=None, coupon=None, issue_date=None, tenor=None, cf=None, name=None, reopened=False,
-                 cusip=None,**kwargs):
+                 cusip=None, **kwargs):
         super(Treasury, self).__init__(name=name, maturity_date=maturity_date, coupon=coupon, issue_date=issue_date,
                                        tenor=tenor, cf=cf, **kwargs)
         self.reopened = reopened
         self.cusip = cusip
+
+        if isinstance(self.maturity_date, datetime.datetime) and coupon is not None:
+            pass
+
 
     @classmethod
     def from_name(cls, name):
@@ -203,6 +221,9 @@ class Treasury(Bond):
 
         accrued_interest, _, _, price_fun = self._price_yield_setup(settle_date, tplus)
 
+        if accrued_interest is None:
+            return 0
+
         yield_fun = lambda y: price_fun(y) - price - accrued_interest
         return round(optimize.newton(yield_fun, .05),6)
 
@@ -217,6 +238,9 @@ class Treasury(Bond):
         Will accept dates in datetime , YYYY/mm/dd, YYYY-mm-dd, or YYYY_mm_dd formatting
         """
         accrued_interest, _, _, price_fun = self._price_yield_setup(settle_date, tplus)
+
+        if accrued_interest is None:
+            return 0
 
         return round(price_fun(ytm) - accrued_interest, 4)
 
@@ -235,6 +259,9 @@ class Treasury(Bond):
         """
         accrued_interest, cf_times, cf_values, price_fun = self._price_yield_setup(settle_date, tplus)
 
+        if accrued_interest is None:
+            return 0
+
         if price_or_yield > 1:
             price = price_or_yield
             yield_fun = lambda y: price_fun(y) - price - accrued_interest
@@ -244,7 +271,7 @@ class Treasury(Bond):
             ytm = price_or_yield
             price = price_fun(ytm) - accrued_interest
 
-        return sum((-.5 * cf * t * (1 + ytm / 2) ** (-1 - t) for cf, t in zip(cf_values, cf_times))) / price
+        return sum((-.5 * cf * t * (1 + ytm / 2) ** (-1 - t) for cf, t in zip(cf_values, cf_times))) / -price
 
     def dv01(self, settle_date, price_or_yield, tplus=0):
         """
@@ -259,6 +286,9 @@ class Treasury(Bond):
         Will accept dates in datetime , YYYY/mm/dd, YYYY-mm-dd, or YYYY_mm_dd formatting
         """
         accrued_interest, cf_times, cf_values, price_fun = self._price_yield_setup(settle_date, tplus)
+
+        if accrued_interest is None:
+            return 0
 
         if price_or_yield > 1:
             price = price_or_yield
@@ -284,6 +314,8 @@ class Treasury(Bond):
         Will accept dates in datetime , YYYY/mm/dd, YYYY-mm-dd, or YYYY_mm_dd formatting
         """
         accrued_interest, _, _, _ = self._price_yield_setup(settle_date, tplus)
+        if accrued_interest is None:
+            return 0
         return accrued_interest
 
     def _price_yield_setup(self, settle_date, tplus=0):
@@ -297,7 +329,7 @@ class Treasury(Bond):
         coupon = self.coupon
 
         if maturity_date is None:
-            return None
+            return None, None, None, None
 
         if tplus == 0:
             settle_date = to_datetime(settle_date)
@@ -305,7 +337,7 @@ class Treasury(Bond):
         else:
             settle_date = self.holiday_cal.next_b_day(settle_date, tplus)
 
-        if settle_date > maturity_date:
+        if settle_date >= maturity_date:
             return None
 
         if issue_date is not None and settle_date < issue_date:
@@ -362,8 +394,13 @@ class UstCashFlows(object):
     this is just an object to hide the cash flow tuples for fast UST cf creation
     """
     def __init__(self):
-        with open('bondfuns/ust_cash_flow_dates.pickle','rb') as pick:
-            self.mid, self.end = pickle.load(pick)
+
+        this_dir, this_filename = os.path.split(__file__)
+        mid_month_path = os.path.join(this_dir, 'data', 'ust_mid_month_cash_flows.csv')
+        end_month_path = os.path.join(this_dir, 'data', 'ust_end_month_cash_flows.csv')
+
+        self.mid = open_string_csv_to_datetime(mid_month_path)
+        self.end = open_string_csv_to_datetime(end_month_path)
 
 ## initializes the cash flow object
 UST_CFS = UstCashFlows()
