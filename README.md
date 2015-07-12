@@ -38,9 +38,9 @@ notes:
 (note: all basic calculations assume the date entered is the settle date. if entering trade date, change tplus to 1)
 
 #### Calendar Methods
-- `is_holiday(self, today)`: True or False if a market holiday (does not count holidays on weekends)
-- `is_b_day(self, today)`: True or False if market holiday or weekend
-- `next_b_day(self, today, step=1)`: the next business day given desired steps ahead
+- `is_holiday(cls, today)`: True or False if a market holiday (does not count holidays on weekends)
+- `is_b_day(cls, today)`: True or False if market holiday or weekend
+- `next_b_day(cls, today, step=1)`: the next business day given desired steps ahead
 - `settle(cls, trade_day)`: using calendar and settle convention to find settle day of trade on given date
 
 #### Other Methods
