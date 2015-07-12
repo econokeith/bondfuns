@@ -1,6 +1,6 @@
 # bondfuns : basic price / yield / calendar functions for evaluating US Treasuries
 
-`bondfun` a creates a basic Treasury bond object `Treasury()` which follows UST conventions (i.e. Actual/Actual, semi-annual coupons, trades settle T+1 etc). It provides basic methods for solving for price, yield to maturity, accrued interest, etc as well as calendar functions to find trade settles, business days, etc. All methods assume entry of settle date not trade date, but have the options to assume trade date if necessary. 
+`bondfun` creates a basic Treasury bond object `Treasury()` which follows UST conventions (i.e. Actual/Actual, semi-annual coupons, trades settle T+1, etc). It provides basic methods for solving for price, yield to maturity, accrued interest, etc as well as calendar functions to find trade settles, business days, etc. All methods assume entry of settle date not trade date, but have the options to assume trade date if necessary. 
 
 `bondfun` will accept dates in datetime, 2012/3/15, 2013-3-15, or 2015_3_15 formats
 
