@@ -175,7 +175,9 @@ class Treasury(Bond):
         self.cusip = cusip
 
         if isinstance(self.maturity_date, datetime.datetime) and coupon is not None:
-            pass
+            mat = self.maturity_date.strftime('%Y_%m_%d')
+            coup = str(coupon * 100)
+            self.name = 'T_' + coup + '_' + mat
 
 
     @classmethod
@@ -203,7 +205,7 @@ class Treasury(Bond):
         else:
             maturity = None
 
-        return cls(maturity_date=maturity, coupon=coupon, name=name)
+        return cls(maturity_date=maturity, coupon=coupon)
 
     def ytm(self, settle_date, price, tplus=0):
         """
@@ -338,7 +340,7 @@ class Treasury(Bond):
             settle_date = self.holiday_cal.next_b_day(settle_date, tplus)
 
         if settle_date >= maturity_date:
-            return None
+            return None, None, None, None
 
         if issue_date is not None and settle_date < issue_date:
             settle_date = issue_date
