@@ -10,6 +10,9 @@
 #### Warning
 - this is the alpha version 0.0 of this package and has only been tested on python 2.7
 
+#### Warning
+- download, cd .../bondfuns, and run sudo python setup.py install 
+
 ## Methods and Attributes
 ### Attribues
 ```
